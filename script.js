@@ -2,6 +2,7 @@ $("#submitBtn").click(function (e) {
   e.preventDefault();
 });
 let data_array = [];
+var updateData;
 const StatesCities = {
   states: ["West Bengal", "Maharashtra", "Delhi"],
   city: [
@@ -53,9 +54,8 @@ const StatesCities = {
   ],
 };
 let state = StatesCities.states;
-// console.log(StatesCities.states);
 
-state.forEach(
+state.map(
   (op) => (myStateList.innerHTML += `<option value="${op}">${op}</option>`)
 );
 StatesCities.city.forEach(
@@ -66,7 +66,6 @@ StatesCities.city.forEach(
 
 function getState() {
   let selectedState = $("#myStateList").find(":selected").val();
-  // console.log(selectedState);
 
   $("#myCityList").empty();
   for (let i = 0; i < StatesCities.city.length; i++) {
@@ -80,9 +79,21 @@ function getState() {
     }
   }
 }
+var selectedRow = null;
 
 function submitData() {
-  let my_obj = {
+  if (selectedRow == null) {
+    console.log("add new data");
+    readFormData();
+    displayData(data_array);
+  } else {
+    console.log("updated data");
+    editData(updateData, selectedRow);
+  }
+}
+
+function readFormData() {
+  var my_obj = {
     firstName: $("#firstName").val(),
     lastName: $("#lastName").val(),
     dateOfBirth: $("#date").val(),
@@ -92,9 +103,9 @@ function submitData() {
     gender: $(`input[type="radio"][name=gender]:checked`).val(),
   };
   data_array.push(my_obj);
-  console.log(data_array);
-  displayData(data_array);
 }
+console.log(data_array);
+
 function displayData(data) {
   $("#myTable").empty();
   for (let i = 0; i < data.length; i++) {
@@ -126,27 +137,11 @@ $("#myTable").on("click", "#deleteBtn", function () {
 });
 
 $("#myTable").on("click", "#editBtn", function () {
-  // close submitdata onclick event
+  selectedRow = this.getAttribute("data-test");
 
-  $("#submitBtn").prop("onclick", null);
-  $("#submitBtn").attr("id", "updateData");
-  $("#updateData").text("Update ");
-  let editAttribute = this.getAttribute("data-test");
-  console.log(" edit attribute :  ", editAttribute);
-  const updateData = data_array[editAttribute];
-  console.log("update data :", updateData);
+  $("#submiBtn").text("Update ");
 
-  console.log("i am calling editData fun");
-
-  editData(updateData, editAttribute);
-  console.log("i am end editFun fun");
-  // $("#submitBtn").addEventListener("click", submitData);
-  // $("#submitBtn").prop("onclick", "submitData()");
-  $("#updateData").prop("onclick", null);
-});
-
-function editData(setInput, editAttribute) {
-  console.log("i am calling setInput fun");
+  setInput = data_array[selectedRow];
 
   let UpdatedForm = {
     firstName: $("#firstName").val(setInput.firstName),
@@ -160,31 +155,24 @@ function editData(setInput, editAttribute) {
       "checked"
     ),
   };
-  console.log(UpdatedForm);
-  $("#updateData")
-    .button()
-    .click(function () {
-      // let editAttribute = this.getAttribute("data-test");
-      // $("#submitBtn").off("click");
-      let my_UpdatedObj = {
-        firstName: $("#firstName").val(),
-        lastName: $("#lastName").val(),
-        dateOfBirth: $("#date").val(),
-        address: $("#address").val(),
-        state: $("#myStateList").find(":selected").val(),
-        city: $("#myCityList").find(":selected").val(),
-        gender: $(`input[type="radio"][name=gender]:checked`).val(),
-      };
-      console.log("got it");
-      console.log("index of edit  :", editAttribute);
-      console.log("updated form value > > ", my_UpdatedObj);
-      data_array[editAttribute] = my_UpdatedObj;
+});
 
-      $("#updateData").attr("id", "submitBtn");
-      $("#submitBtn").text("Submit ");
-      // $("#submitBtn").on("click", submitData());
-      $("#updateData").prop("onclick", null);
+function editData(setInput, editAttribute) {
+  console.log("i am calling setInput fun");
 
-      displayData(data_array);
-    });
+  let my_UpdatedObj = {
+    firstName: $("#firstName").val(),
+    lastName: $("#lastName").val(),
+    dateOfBirth: $("#date").val(),
+    address: $("#address").val(),
+    state: $("#myStateList").find(":selected").val(),
+    city: $("#myCityList").find(":selected").val(),
+    gender: $(`input[type="radio"][name=gender]:checked`).val(),
+  };
+
+  console.log("updated form value > > ", my_UpdatedObj);
+  data_array[editAttribute] = my_UpdatedObj;
+
+  displayData(data_array);
+  selectedRow = null;
 }
