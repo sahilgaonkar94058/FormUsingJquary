@@ -56,24 +56,26 @@ const StatesCities = {
 let state = StatesCities.states;
 
 state.map(
-  (op) => (myStateList.innerHTML += `<option value="${op}">${op}</option>`)
+  (op) => (myStateList.innerHTML += `<option value="${op}" >${op}</option>`)
 );
-StatesCities.city.forEach(
-  (op) =>
-    (myStateList.innerHTML += `
-  <option value="${op}">${op}</option>`)
-);
+// StatesCities.city.forEach(
+//   (op) =>
+//     (myCityList.innerHTML += `
+//   <option value="${op}">${op}</option>`)
+// );
 
 function getState() {
   let selectedState = $("#myStateList").find(":selected").val();
 
   $("#myCityList").empty();
+  myCityList.innerHTML = `<option value="" value="" selected disabled hidde>select city </option>`;
+
   for (let i = 0; i < StatesCities.city.length; i++) {
     if (StatesCities.city[i].state == selectedState) {
       StatesCities.city[i].cities.forEach(
         (op) =>
           (myCityList.innerHTML += `
-        
+          
         <option value="${op}">${op}</option>`)
       );
     }
@@ -82,14 +84,21 @@ function getState() {
 var selectedRow = null;
 
 function submitData() {
+ if( validateForm()==true){
+  console.log("valdate is true");
   if (selectedRow == null) {
-    console.log("add new data");
-    readFormData();
-    displayData(data_array);
-  } else {
-    console.log("updated data");
-    editData(updateData, selectedRow);
+      console.log("add new data");
+      readFormData();
+      displayData(data_array);
+    } else {
+      if( validateForm()==true){
+        console.log("updated data");
+        editData(updateData, selectedRow);
+      }
+     
+    }
   }
+  // $("#myCityList").empty();
 }
 
 function readFormData() {
@@ -103,11 +112,13 @@ function readFormData() {
     gender: $(`input[type="radio"][name=gender]:checked`).val(),
   };
   data_array.push(my_obj);
+  // $("#myCityList").empty();
 }
 console.log(data_array);
 
 function displayData(data) {
   $("#myTable").empty();
+  $('#myCityList').empty(); 
   for (let i = 0; i < data.length; i++) {
     var tableData = `
     <tr>
@@ -150,12 +161,15 @@ $("#myTable").on("click", "#editBtn", function () {
     address: $("#address").val(setInput.address),
     state: $("#myStateList").val(setInput.state),
     city: $("#myCityList").val(setInput.city),
+    
     gender: $("input[name=gender][value=" + setInput.gender + "]").attr(
       "checked",
       "checked"
     ),
   };
+ 
 });
+
 
 function editData(setInput, editAttribute) {
   console.log("i am calling setInput fun");
@@ -174,5 +188,58 @@ function editData(setInput, editAttribute) {
   data_array[editAttribute] = my_UpdatedObj;
 
   displayData(data_array);
+  // console.log("myCIty : > ",city)
+  $('#myCityList').empty(); 
   selectedRow = null;
 }
+
+
+//Validate form
+function validateForm(){
+  // var mystate = $("#myStateList").find(":selected").val();
+  var names = ['firstName','lastName','address','gender','date','myStateList'];
+  var errCount = 0;
+  
+  names.forEach(function(el){
+    var val = document.forms['myForm'][el].value;
+    if(el == 'firstName' &&  val.match(/[1-9]/g)!=null){
+      // !/^[a-zA-Z]*$/g.test(val) == false
+      // && val != null
+      $('#'+el).css('visibility', "visible");
+      $('#'+ el + 'Err').text('plase enter a valid name');
+      $('#'+ el + 'Err').css('visibility', "visible",);
+      ++errCount;
+    }else if(el=='lastName' && val.match(/[1-9]/g)!=null){
+      $('#'+el).css('visibility', "visible",);
+      $('#'+ el + 'Err').text('please enter valid Last name');
+      $('#'+ el + 'Err').css('visibility', "visible" ,);
+      ++errCount;
+    }
+    else if(el=='address' && val.match(/[1-9]/g)!=null){
+      $('#'+el).css('visibility', "visible",);
+      $('#'+ el + 'Err').text('please enter valid address ');
+      $('#'+ el + 'Err').css('visibility', "visible",);
+      ++errCount;
+    }
+      else if (val == null || val==''){
+        $('#'+el).css('visibility', "visible",);
+        
+        $('#'+ el + 'Err').text( el + ' must be filled');
+        $('#'+ el + 'Err').css('visibility', "visible" ,);
+        ++errCount;
+      }
+    
+
+    else{
+      $('#'+el).css("border","1px solid red");
+      $('#'+ el + 'Err').css('visibility', "hidden",);
+    }
+  
+  });
+  if(errCount) {
+    return false
+  }else{
+    return true
+  };
+}
+
