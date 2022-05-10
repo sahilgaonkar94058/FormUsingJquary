@@ -1,7 +1,7 @@
 $("#submitBtn").click(function (e) {
   e.preventDefault();
 });
-let data_array = [];
+var data_array = [];
 var updateData;
 const StatesCities = {
   states: ["West Bengal", "Maharashtra", "Delhi"],
@@ -84,21 +84,20 @@ function getState() {
 var selectedRow = null;
 
 function submitData() {
- if( validateForm()==true){
-  console.log("valdate is true");
-  if (selectedRow == null) {
+  if (validateForm() == true) {
+    console.log("valdate is true");
+    if (selectedRow == null) {
       console.log("add new data");
       readFormData();
+
       displayData(data_array);
     } else {
-      if( validateForm()==true){
+      if (validateForm() == true) {
         console.log("updated data");
         editData(updateData, selectedRow);
       }
-     
     }
   }
-  // $("#myCityList").empty();
 }
 
 function readFormData() {
@@ -111,14 +110,28 @@ function readFormData() {
     city: $("#myCityList").find(":selected").val(),
     gender: $(`input[type="radio"][name=gender]:checked`).val(),
   };
-  data_array.push(my_obj);
-  // $("#myCityList").empty();
+ 
+  console.log("before =>", my_obj.firstName);
+ 
+  const userExists = data_array.some(
+  
+    (data_array) => data_array.firstName+data_array.lastName === my_obj.firstName+my_obj.lastName
+  );
+  if (userExists) {
+    alert("User Already Exites Please Try with Another Username");
+  }
+  else{
+
+    data_array.push(my_obj);
+  }
+
 }
+
 console.log(data_array);
 
 function displayData(data) {
   $("#myTable").empty();
-  $('#myCityList').empty(); 
+  $("#myCityList").empty();
   for (let i = 0; i < data.length; i++) {
     var tableData = `
     <tr>
@@ -161,15 +174,13 @@ $("#myTable").on("click", "#editBtn", function () {
     address: $("#address").val(setInput.address),
     state: $("#myStateList").val(setInput.state),
     city: $("#myCityList").val(setInput.city),
-    
+
     gender: $("input[name=gender][value=" + setInput.gender + "]").attr(
       "checked",
       "checked"
     ),
   };
- 
 });
-
 
 function editData(setInput, editAttribute) {
   console.log("i am calling setInput fun");
@@ -184,62 +195,67 @@ function editData(setInput, editAttribute) {
     gender: $(`input[type="radio"][name=gender]:checked`).val(),
   };
 
+  const userExists = data_array.some(
+  
+    (data_array) => data_array.firstName+data_array.lastName === my_UpdatedObj.firstName+my_UpdatedObj.lastName
+  );
+  if (userExists) {
+    alert("User Already Exites Please Try with Another Username");
+  }
+  else{
+
+    data_array[editAttribute] = my_UpdatedObj;
+  }
+
   console.log("updated form value > > ", my_UpdatedObj);
-  data_array[editAttribute] = my_UpdatedObj;
+
 
   displayData(data_array);
-  // console.log("myCIty : > ",city)
-  $('#myCityList').empty(); 
+  $("#myCityList").empty();
   selectedRow = null;
 }
 
 
-//Validate form
-function validateForm(){
-  // var mystate = $("#myStateList").find(":selected").val();
-  var names = ['firstName','lastName','address','gender','date','myStateList'];
+function validateForm() {
+  var names = [
+    "firstName",
+    "lastName",
+    "gender",
+    "date",
+    "myStateList",
+    "myCityList",
+  ];
   var errCount = 0;
+
+  names.forEach(function (el) {
+    var val = document.forms["myForm"][el].value;
+    if (el == "firstName" && val.match(/[1-9]/g) != null) {
   
-  names.forEach(function(el){
-    var val = document.forms['myForm'][el].value;
-    if(el == 'firstName' &&  val.match(/[1-9]/g)!=null){
-      // !/^[a-zA-Z]*$/g.test(val) == false
-      // && val != null
-      $('#'+el).css('visibility', "visible");
-      $('#'+ el + 'Err').text('plase enter a valid name');
-      $('#'+ el + 'Err').css('visibility', "visible",);
+      $("#" + el + "Err").text("--< plase enter a valid name >--");
+      $("#" + el + "Err").css("visibility", "visible");
       ++errCount;
-    }else if(el=='lastName' && val.match(/[1-9]/g)!=null){
-      $('#'+el).css('visibility', "visible",);
-      $('#'+ el + 'Err').text('please enter valid Last name');
-      $('#'+ el + 'Err').css('visibility', "visible" ,);
+    } else if (el == "lastName" && val.match(/[1-9]/g) != null) {
+    
+      $("#" + el + "Err").text("--< Please enter valid Last Name >--");
+      $("#" + el + "Err").css("visibility", "visible");
       ++errCount;
-    }
-    else if(el=='address' && val.match(/[1-9]/g)!=null){
-      $('#'+el).css('visibility', "visible",);
-      $('#'+ el + 'Err').text('please enter valid address ');
-      $('#'+ el + 'Err').css('visibility', "visible",);
-      ++errCount;
-    }
-      else if (val == null || val==''){
-        $('#'+el).css('visibility', "visible",);
-        
-        $('#'+ el + 'Err').text( el + ' must be filled');
-        $('#'+ el + 'Err').css('visibility', "visible" ,);
-        ++errCount;
-      }
+    } else if (val == null || val == "") {
     
 
-    else{
-      $('#'+el).css("border","1px solid red");
-      $('#'+ el + 'Err').css('visibility', "hidden",);
+      $("#" + el + "Err").text("--< "+ el + " must be filled"+" >--");
+      $("#" + el + "Err").css("visibility", "visible");
+      ++errCount;
+    } else {
+    
+      $("#" + el + "Err").css("visibility", "hidden");
     }
-  
   });
-  if(errCount) {
-    return false
-  }else{
-    return true
-  };
+  if (errCount) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
+
+// $("." + el + "Border").css("border", "1px solid red");
