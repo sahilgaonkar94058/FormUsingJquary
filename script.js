@@ -1,8 +1,11 @@
 $("#submitBtn").click(function (e) {
   e.preventDefault();
 });
+
 var data_array = [];
+
 var updateData;
+
 const StatesCities = {
   states: ["West Bengal", "Maharashtra", "Delhi"],
   city: [
@@ -53,17 +56,14 @@ const StatesCities = {
     },
   ],
 };
+
 let state = StatesCities.states;
 
 state.map(
   (op) => (myStateList.innerHTML += `<option value="${op}" >${op}</option>`)
 );
-// StatesCities.city.forEach(
-//   (op) =>
-//     (myCityList.innerHTML += `
-//   <option value="${op}">${op}</option>`)
-// );
 
+// this function for get State and add cities of state to cityList
 function getState() {
   let selectedState = $("#myStateList").find(":selected").val();
 
@@ -81,8 +81,11 @@ function getState() {
     }
   }
 }
-var selectedRow = null;
 
+var selectedRow = null;   //set index to null of selcted table row
+
+
+// for submit Button
 function submitData() {
   if (validateForm() == true) {
     console.log("valdate is true");
@@ -131,7 +134,7 @@ console.log(data_array);
 
 function displayData(data) {
   $("#myTable").empty();
-  $("#myCityList").empty();
+  // $("#myCityList").empty();
   for (let i = 0; i < data.length; i++) {
     var tableData = `
     <tr>
@@ -142,7 +145,7 @@ function displayData(data) {
       <td>${data[i].state}</td>
       <td>${data[i].city}</td>
       <td>${data[i].address}</td>
-      <td><button id="editBtn" data-test="${i}">Edit</button><button id="deleteBtn" data-id="${i}">Delete</button></td>
+      <td><button id="editBtn" class="btn btn-primary me-3"data-test="${i}">Edit</button><button id="deleteBtn" class="btn btn-danger " data-id="${i}">Delete</button></td>
     </tr>
     `;
     $("#myForm")[0].reset();
@@ -160,6 +163,8 @@ $("#myTable").on("click", "#deleteBtn", function () {
   console.log("data array after", data_array);
 });
 
+
+// to get data of user on form to Update Data or edit data
 $("#myTable").on("click", "#editBtn", function () {
   selectedRow = this.getAttribute("data-test");
 
@@ -201,6 +206,7 @@ function editData(setInput, editAttribute) {
   );
   if (userExists) {
     alert("User Already Exites Please Try with Another Username");
+    UpdatedForm
   }
   else{
 
@@ -211,11 +217,11 @@ function editData(setInput, editAttribute) {
 
 
   displayData(data_array);
-  $("#myCityList").empty();
+  // $("#myCityList").empty();
   selectedRow = null;
 }
 
-
+// check Validation of Form
 function validateForm() {
   var names = [
     "firstName",
@@ -233,20 +239,26 @@ function validateForm() {
   
       $("#" + el + "Err").text("--< plase enter a valid name >--");
       $("#" + el + "Err").css("visibility", "visible");
+      $("#"+el).css("border-color","red");
       ++errCount;
     } else if (el == "lastName" && val.match(/[1-9]/g) != null) {
     
       $("#" + el + "Err").text("--< Please enter valid Last Name >--");
       $("#" + el + "Err").css("visibility", "visible");
+      $("#"+el).css("border-color","red");
+
       ++errCount;
     } else if (val == null || val == "") {
     
 
       $("#" + el + "Err").text("--< "+ el + " must be filled"+" >--");
       $("#" + el + "Err").css("visibility", "visible");
+      $("#"+el).css("border-color","red");
+
       ++errCount;
     } else {
-    
+      $("#"+el).css("border-color","grey");
+
       $("#" + el + "Err").css("visibility", "hidden");
     }
   });
